@@ -1,7 +1,7 @@
 # Default ignored files
 /shelf/
 /workspace.xml
-./.idea/
+.idea
 # Editor-based HTTP Client requests
 /httpRequests/
 # Ignored default folder with query files
