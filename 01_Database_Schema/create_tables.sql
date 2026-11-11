@@ -152,7 +152,7 @@ CREATE TABLE IF NOT EXISTS Address (
 );
 
 -- ===========================================
--- 3. PAYMENT TABLES
+-- 4. PAYMENT TABLES
 -- ===========================================
 
 CREATE TABLE IF NOT EXISTS PaymentMethod (
@@ -185,7 +185,7 @@ CREATE TABLE IF NOT EXISTS BillingAddress (
 );
 
 -- ===========================================
--- 4. DISCOUNT AND GIFT CARD TABLES
+-- 5. DISCOUNT AND GIFT CARD TABLES
 -- ===========================================
 
 CREATE TABLE IF NOT EXISTS Discount (
@@ -220,7 +220,7 @@ CREATE TABLE IF NOT EXISTS GiftCard (
 );
 
 -- ===========================================
--- 5. ORDER TABLES
+-- 6. ORDER TABLES
 -- ===========================================
 
 CREATE TABLE IF NOT EXISTS Orders (
@@ -286,7 +286,7 @@ CREATE TABLE IF NOT EXISTS OrderTransaction (
 );
 
 -- ===========================================
--- 6. RETURN TABLE
+-- 7. RETURN TABLE
 -- ===========================================
 
 CREATE TABLE IF NOT EXISTS ProductReturn (
@@ -307,7 +307,7 @@ CREATE TABLE IF NOT EXISTS ProductReturn (
 );
 
 -- ===========================================
--- 7. SHOPPING CART TABLES
+-- 8. SHOPPING CART TABLES
 -- ===========================================
 
 CREATE TABLE IF NOT EXISTS Cart (
