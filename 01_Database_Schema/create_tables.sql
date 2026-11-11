@@ -108,14 +108,32 @@ CREATE TABLE IF NOT EXISTS ProductCategory (
 -- 3. ADDRESS AND PAYMENT TABLES
 -- ===========================================
 
+CREATE TABLE IF NOT EXISTS Countries (
+    CountryCode CHAR(2) PRIMARY KEY,
+    CountryName VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS States (
+    CountryCode CHAR(2) NOT NULL,
+    StateCode VARCHAR(10) NOT NULL,
+    StateName VARCHAR(100) NOT NULL,
+
+    PRIMARY KEY (CountryCode, StateCode),
+
+    FOREIGN KEY (CountryCode) REFERENCES Countries (CountryCode)
+);
+
 CREATE TABLE IF NOT EXISTS ZipCode (
     PostalCode VARCHAR(20) NOT NULL,
     City VARCHAR(100) NOT NULL,
-    State VARCHAR(100) NOT NULL,
-    Country VARCHAR(100) NOT NULL,
+    State VARCHAR(10) NOT NULL,
+    Country CHAR(2) NOT NULL,
 
     PRIMARY KEY (PostalCode)
+
+    FOREIGN KEY (Country, State) REFERENCES States (CountryCode, StateCode)
 );
+
 
 CREATE TABLE IF NOT EXISTS Address (
     AddressID INT UNSIGNED AUTO_INCREMENT,
