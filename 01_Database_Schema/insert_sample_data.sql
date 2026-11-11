@@ -142,3 +142,39 @@ SELECT * FROM GiftCard;
 -- ============================================
 -- ORDERS SAMPLE DATA
 -- ============================================
+
+-- TODO: add Orders
+
+-- TODO: add OrderItem
+
+-- TODO: add OrderDiscount
+
+-- TODO: add OrderTransaction
+
+-- ============================================
+-- RETURN SAMPLE DATA
+-- ============================================
+
+-- TODO: add ProductReturn
+
+-- ============================================
+-- SHOPPING CART SAMPLE DATA
+-- ============================================
+
+INSERT INTO Cart (UserID)
+VALUES
+(1), 
+(2), 
+(3), 
+(4);
+
+SELECT * FROM Cart;
+
+INSERT INTO CartItem (SKU, CartID, Quantity)
+VALUES
+('JEA-BK-32', 1, 1),
+('BEL-BR-L', 2, 2),
+('TSH-NV-M', 3, 1),
+('SHO-WH-09', 4, 1);
+
+SELECT * FROM CartItem;
