@@ -88,5 +88,5 @@ VALUES
 SELECT * FROM ProductCategory;
 
 -- ============================================
--- ADDRESS AND PAYMENT SAMPLE DATA
+-- ADDRESS SAMPLE DATA
 -- ============================================
