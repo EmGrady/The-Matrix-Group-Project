@@ -190,7 +190,7 @@ CREATE TABLE IF NOT EXISTS BillingAddress (
 
 CREATE TABLE IF NOT EXISTS Discount (
     DiscountID INT UNSIGNED AUTO_INCREMENT,
-    DiscountType ENUM('Precentage', 'FixedAmount') NOT NULL,
+    DiscountType ENUM('Percentage', 'FixedAmount') NOT NULL,
     DiscountValue DECIMAL(10, 2) NOT NULL,
     DiscountCode VARCHAR(50) UNIQUE,
     StartDate DATETIME,
