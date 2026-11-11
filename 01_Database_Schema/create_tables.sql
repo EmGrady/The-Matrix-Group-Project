@@ -125,28 +125,14 @@ CREATE TABLE IF NOT EXISTS States (
 CREATE TABLE IF NOT EXISTS ZipCode (
     PostalCode VARCHAR(20) NOT NULL,
     City VARCHAR(100) NOT NULL,
-    State VARCHAR(100) NOT NULL,
-    Country VARCHAR(100) NOT NULL,
+    State VARCHAR(10) NOT NULL,
+    Country CHAR(2) NOT NULL,
 
     PRIMARY KEY (PostalCode)
+
+    FOREIGN KEY (Country, State) REFERENCES States (CountryCode, StateCode)
 );
 
-ALTER TABLE ZipCode
-DROP COLUMN State;
-
-ALTER TABLE ZipCode
-DROP COLUMN Country;
-
-ALTER TABLE ZipCode
-ADD COLUMN State VARCHAR(10) NOT NULL;
-
-ALTER TABLE ZipCode
-ADD COLUMN Country CHAR(2) NOT NULL;
-
-ALTER TABLE ZipCode
-ADD CONSTRAINT fk_zipcode_states
-FOREIGN KEY (Country, State)
-REFERENCES States (CountryCode, StateCode);
 
 CREATE TABLE IF NOT EXISTS Address (
     AddressID INT UNSIGNED AUTO_INCREMENT,

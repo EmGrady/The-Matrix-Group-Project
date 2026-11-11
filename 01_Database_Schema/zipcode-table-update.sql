@@ -1,0 +1,16 @@
+ALTER TABLE ZipCode
+DROP COLUMN State;
+
+ALTER TABLE ZipCode
+DROP COLUMN Country;
+
+ALTER TABLE ZipCode
+ADD COLUMN State VARCHAR(10) NOT NULL;
+
+ALTER TABLE ZipCode
+ADD COLUMN Country CHAR(2) NOT NULL;
+
+ALTER TABLE ZipCode
+ADD CONSTRAINT fk_zipcode_states
+FOREIGN KEY (Country, State)
+REFERENCES States (CountryCode, StateCode);
