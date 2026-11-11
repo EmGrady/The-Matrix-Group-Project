@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS ProductCategory (
 );
 
 -- ===========================================
--- 3. ADDRESS AND PAYMENT TABLES
+-- 3. ADDRESS TABLES
 -- ===========================================
 
 CREATE TABLE IF NOT EXISTS Countries (
@@ -150,6 +150,10 @@ CREATE TABLE IF NOT EXISTS Address (
     FOREIGN KEY (PostalCode) REFERENCES ZipCode (PostalCode),
     FOREIGN KEY (UserID) REFERENCES User (UserID)
 );
+
+-- ===========================================
+-- 3. PAYMENT TABLES
+-- ===========================================
 
 CREATE TABLE IF NOT EXISTS PaymentMethod (
     PaymentMethodID INT UNSIGNED AUTO_INCREMENT,
