@@ -1,7 +1,5 @@
-USE fit_and_order;
-
 -- ===========================================
--- 1. USER AND ROLE TABLES
+-- USER AND ROLE TABLES
 -- ===========================================
 
 CREATE TABLE IF NOT EXISTS User (
@@ -15,13 +13,15 @@ CREATE TABLE IF NOT EXISTS User (
     PRIMARY KEY (UserID)
 );
 
+
 CREATE TABLE IF NOT EXISTS RoleType (
     RoleID INT UNSIGNED AUTO_INCREMENT,
-    RoleName VARCHAR(100) NOT NULL,
+    RoleName VARCHAR(100) NOT NULL UNIQUE,
     RoleDescription TEXT,
 
     PRIMARY KEY (RoleID)
 );
+
 
 CREATE TABLE IF NOT EXISTS UserRole (
     UserID INT UNSIGNED NOT NULL,
@@ -33,9 +33,8 @@ CREATE TABLE IF NOT EXISTS UserRole (
     FOREIGN KEY (RoleID) REFERENCES RoleType (RoleID)
 );
 
-
 -- ===========================================
--- 2. PRODUCT CATALOG TABLES
+-- PRODUCT CATALOG TABLES
 -- ===========================================
 
 CREATE TABLE IF NOT EXISTS Brand (
@@ -45,12 +44,14 @@ CREATE TABLE IF NOT EXISTS Brand (
     PRIMARY KEY (BrandID)
 );
 
+
 CREATE TABLE IF NOT EXISTS Category (
     CategoryID INT UNSIGNED AUTO_INCREMENT,
     CategoryName VARCHAR(100) NOT NULL UNIQUE,
 
     PRIMARY KEY (CategoryID)
 );
+
 
 CREATE TABLE IF NOT EXISTS Product (
     ProductID INT UNSIGNED AUTO_INCREMENT,
@@ -66,6 +67,18 @@ CREATE TABLE IF NOT EXISTS Product (
     CHECK (BasePrice >= 0)
 );
 
+
+CREATE TABLE IF NOT EXISTS ProductCategory (
+    ProductID INT UNSIGNED NOT NULL,
+    CategoryID INT UNSIGNED NOT NULL,
+
+    PRIMARY KEY (ProductID, CategoryID),
+
+    FOREIGN KEY (ProductID) REFERENCES Product (ProductID),
+    FOREIGN KEY (CategoryID) REFERENCES Category (CategoryID)
+);
+
+
 CREATE TABLE IF NOT EXISTS ProductVariant (
     SKU VARCHAR(50) NOT NULL,
     Style VARCHAR(100),
@@ -79,39 +92,31 @@ CREATE TABLE IF NOT EXISTS ProductVariant (
     FOREIGN KEY (ProductID) REFERENCES Product (ProductID)
 );
 
+
 CREATE TABLE IF NOT EXISTS Inventory (
-    InventoryID INT UNSIGNED AUTO_INCREMENT,
     SKU VARCHAR(50) NOT NULL UNIQUE,
     QuantityOnHand INT UNSIGNED NOT NULL DEFAULT 0,
     QuantityReserved INT UNSIGNED NOT NULL DEFAULT 0,
     LastUpdated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         ON UPDATE CURRENT_TIMESTAMP,
     
-    PRIMARY KEY (InventoryID),
+    PRIMARY KEY (SKU),
 
     FOREIGN KEY (SKU) REFERENCES ProductVariant (SKU),
 
+    CHECK (QuantityOnHand >= 0),
     CHECK (QuantityReserved <= QuantityOnHand)
 );
 
-CREATE TABLE IF NOT EXISTS ProductCategory (
-    ProductID INT UNSIGNED NOT NULL,
-    CategoryID INT UNSIGNED NOT NULL,
-
-    PRIMARY KEY (ProductID, CategoryID),
-
-    FOREIGN KEY (ProductID) REFERENCES Product (ProductID),
-    FOREIGN KEY (CategoryID) REFERENCES Category (CategoryID)
-);
-
 -- ===========================================
--- 3. ADDRESS TABLES
+-- ADDRESS TABLES
 -- ===========================================
 
 CREATE TABLE IF NOT EXISTS Countries (
     CountryCode CHAR(2) PRIMARY KEY,
-    CountryName VARCHAR(100) NOT NULL
+    CountryName VARCHAR(100) NOT NULL UNIQUE
 );
+
 
 CREATE TABLE IF NOT EXISTS States (
     CountryCode CHAR(2) NOT NULL,
@@ -123,13 +128,15 @@ CREATE TABLE IF NOT EXISTS States (
     FOREIGN KEY (CountryCode) REFERENCES Countries (CountryCode)
 );
 
+
 CREATE TABLE IF NOT EXISTS ZipCode (
+    ZipCodeID INT UNSIGNED AUTO_INCREMENT,
     PostalCode VARCHAR(20) NOT NULL,
     City VARCHAR(100) NOT NULL,
     State VARCHAR(10) NOT NULL,
     Country CHAR(2) NOT NULL,
 
-    PRIMARY KEY (PostalCode)
+    PRIMARY KEY (ZipCodeID),
 
     FOREIGN KEY (Country, State) REFERENCES States (CountryCode, StateCode)
 );
@@ -142,17 +149,17 @@ CREATE TABLE IF NOT EXISTS Address (
     AddressLine2 VARCHAR(255),
     RecipientFirstName VARCHAR(100),
     RecipientLastName VARCHAR(100),
-    PostalCode VARCHAR(20) NOT NULL,
+    ZipCodeID INT UNSIGNED NOT NULL,
     UserID INT UNSIGNED,
 
     PRIMARY KEY (AddressID),
 
-    FOREIGN KEY (PostalCode) REFERENCES ZipCode (PostalCode),
+    FOREIGN KEY (ZipCodeID) REFERENCES ZipCode (ZipCodeID),
     FOREIGN KEY (UserID) REFERENCES User (UserID)
 );
 
 -- ===========================================
--- 4. PAYMENT TABLES
+-- PAYMENT TABLES
 -- ===========================================
 
 CREATE TABLE IF NOT EXISTS PaymentMethod (
@@ -174,6 +181,7 @@ CREATE TABLE IF NOT EXISTS PaymentMethod (
     )
 );
 
+
 CREATE TABLE IF NOT EXISTS BillingAddress (
     PaymentMethodID INT UNSIGNED NOT NULL,
     AddressID INT UNSIGNED NOT NULL,
@@ -185,7 +193,7 @@ CREATE TABLE IF NOT EXISTS BillingAddress (
 );
 
 -- ===========================================
--- 5. DISCOUNT AND GIFT CARD TABLES
+-- DISCOUNT AND GIFT CARD TABLES
 -- ===========================================
 
 CREATE TABLE IF NOT EXISTS Discount (
@@ -205,6 +213,7 @@ CREATE TABLE IF NOT EXISTS Discount (
     )
 );
 
+
 CREATE TABLE IF NOT EXISTS GiftCard (
     CardID INT UNSIGNED AUTO_INCREMENT,
     Code VARCHAR(32) NOT NULL UNIQUE,
@@ -220,13 +229,17 @@ CREATE TABLE IF NOT EXISTS GiftCard (
 );
 
 -- ===========================================
--- 6. ORDER TABLES
+-- ORDER TABLES
 -- ===========================================
 
 CREATE TABLE IF NOT EXISTS Orders (
     OrderID INT UNSIGNED AUTO_INCREMENT,
     OrderStatus VARCHAR(20) NOT NULL DEFAULT 'Pending',
     OrderDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Subtotal DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    DiscountAmount DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    TaxAmount DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    GrandTotal DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
     TrackingNumber VARCHAR(50) UNIQUE,
     UserID INT UNSIGNED NOT NULL,
     ShippingAddressID INT UNSIGNED,
@@ -234,14 +247,20 @@ CREATE TABLE IF NOT EXISTS Orders (
     PRIMARY KEY (OrderID),
 
     FOREIGN KEY (UserID) REFERENCES User (UserID),
-    FOREIGN KEY (ShippingAddressID) REFERENCES Address (AddressID)
+    FOREIGN KEY (ShippingAddressID) REFERENCES Address (AddressID),
+
+    CHECK (Subtotal >= 0.00),
+    CHECK (DiscountAmount >= 0.00),
+    CHECK (TaxAmount >= 0.00),
+    CHECK (GrandTotal >= 0.00)
 );
+
 
 CREATE TABLE IF NOT EXISTS OrderItem (
     SKU VARCHAR(50) NOT NULL,
     OrderID INT UNSIGNED NOT NULL,
     Quantity INT UNSIGNED NOT NULL,
-    UnitPrice DECIMAL(10, 2) NOT NULL,
+    UnitPrice DECIMAL(10, 2) NOT NULL, -- ProductPrice +- VariantPrice
 
     PRIMARY KEY (SKU, OrderID),
 
@@ -252,15 +271,20 @@ CREATE TABLE IF NOT EXISTS OrderItem (
     CHECK (UnitPrice >= 0)
 );
 
+
 CREATE TABLE IF NOT EXISTS OrderDiscount (
     OrderID INT UNSIGNED NOT NULL,
     DiscountID INT UNSIGNED NOT NULL,
+    DiscountAmount DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
 
     PRIMARY KEY (OrderID, DiscountID),
 
     FOREIGN KEY (OrderID) REFERENCES Orders (OrderID),
-    FOREIGN KEY (DiscountID) REFERENCES Discount (DiscountID)
+    FOREIGN KEY (DiscountID) REFERENCES Discount (DiscountID),
+
+    CHECK (DiscountAmount >= 0)
 );
+
 
 CREATE TABLE IF NOT EXISTS OrderTransaction (
     TransactionID INT UNSIGNED AUTO_INCREMENT,
@@ -286,12 +310,12 @@ CREATE TABLE IF NOT EXISTS OrderTransaction (
 );
 
 -- ===========================================
--- 7. RETURN TABLE
+-- RETURN TABLE
 -- ===========================================
 
 CREATE TABLE IF NOT EXISTS ProductReturn (
     ReturnID INT UNSIGNED AUTO_INCREMENT,
-    ReturnDate DATE NOT NULL,
+    ReturnDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     ReturnReason TEXT,
     ReturnQuantity INT UNSIGNED NOT NULL,
     RefundAmount DECIMAL(10, 2) NOT NULL,
@@ -307,19 +331,20 @@ CREATE TABLE IF NOT EXISTS ProductReturn (
 );
 
 -- ===========================================
--- 8. SHOPPING CART TABLES
+-- SHOPPING CART TABLES
 -- ===========================================
 
 CREATE TABLE IF NOT EXISTS Cart (
     CartID INT UNSIGNED AUTO_INCREMENT,
     LastUpdated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         ON UPDATE CURRENT_TIMESTAMP,
-    UserID INT UNSIGNED NOT NULL,
+    UserID INT UNSIGNED NOT NULL UNIQUE,
 
     PRIMARY KEY (CartID),
 
     FOREIGN KEY (UserID) REFERENCES User (UserID)
 );
+
 
 CREATE TABLE IF NOT EXISTS CartItem (
     SKU VARCHAR(50) NOT NULL,
