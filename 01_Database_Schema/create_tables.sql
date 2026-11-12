@@ -129,7 +129,7 @@ CREATE TABLE IF NOT EXISTS ZipCode (
     State VARCHAR(10) NOT NULL,
     Country CHAR(2) NOT NULL,
 
-    PRIMARY KEY (PostalCode)
+    PRIMARY KEY (PostalCode),
 
     FOREIGN KEY (Country, State) REFERENCES States (CountryCode, StateCode)
 );
