@@ -37,22 +37,22 @@ SELECT * FROM UserRole;
 -- ============================================
 
 INSERT INTO Brand
-(BrandName)
+(BrandID, BrandName)
 VALUES
-('Everyday Co.'),
-('Northline'),
-('Fleet'),
-('Brook');
+(1, 'Everyday Co.'),
+(2, 'Northline'),
+(3, 'Fleet'),
+(4, 'Brook');
 
 SELECT * FROM Brand;
 
 INSERT INTO Category
-(CategoryName)
+(CategoryID, CategoryName)
 VALUES
-('Tops'),
-('Bottoms'),
-('Footwear'),
-('Accessories');
+(1, 'Tops'),
+(2, 'Bottoms'),
+(3, 'Footwear'),
+(4, 'Accessories');
 
 SELECT * FROM Category;
 
