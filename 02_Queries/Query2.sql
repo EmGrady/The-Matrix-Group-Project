@@ -15,4 +15,5 @@ JOIN ProductVariant pv
 JOIN Inventory i
     ON i.SKU = pv.SKU
 GROUP BY c.CategoryID, c.CategoryName
+HAVING SUM(i.QuantityOnHand - i.QuantityReserved) > 0
 ORDER BY TotalAvailableUnits DESC;
