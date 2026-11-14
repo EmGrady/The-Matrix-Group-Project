@@ -1,5 +1,4 @@
 -- Query 1: Available Inventory by Product Variant
-
 SELECT
     b.BrandName,
     p.ProductName,
@@ -18,7 +17,6 @@ WHERE (i.QuantityOnHand - i.QuantityReserved) > 0
 ORDER BY b.BrandName, p.ProductName;
 
 -- Query 2: Inventory Summary by Category
-
 SELECT
     c.CategoryName,
     COUNT(DISTINCT p.ProductID) AS ProductCount,
@@ -38,7 +36,6 @@ HAVING SUM(i.QuantityOnHand - i.QuantityReserved) > 0
 ORDER BY TotalAvailableUnits DESC;
 
 -- Query 3: Average Product Price by Category
-
 SELECT
     c.CategoryName,
     COUNT(p.ProductID) AS ProductCount,
@@ -52,7 +49,6 @@ GROUP BY c.CategoryID, c.CategoryName
 ORDER BY AveragePrice DESC;
 
 -- Query 4: Products Priced Above Overall Average
-
 SELECT
     ProductName,
     BasePrice
@@ -65,7 +61,6 @@ WHERE BasePrice >
 ORDER BY BasePrice DESC;
 
 -- Query 5: Products and Their Categories
-
 SELECT
     p.ProductName,
     b.BrandName,
@@ -81,7 +76,6 @@ JOIN Category c
 ORDER BY c.CategoryName, p.ProductName;
 
 -- Query 6: Total Inventory Value
-
 SELECT
     p.ProductName,
     SUM(i.QuantityOnHand - i.QuantityReserved) AS TotalAvailableUnits,
@@ -98,7 +92,6 @@ GROUP BY p.ProductID, p.ProductName
 ORDER BY TotalInventoryValue DESC;
 
 -- Query 7: Brand Product Statistics
-
 SELECT
     b.BrandName,
     COUNT(DISTINCT p.ProductID) AS ProductCount,
@@ -114,7 +107,6 @@ GROUP BY b.BrandID, b.BrandName
 ORDER BY b.BrandName;
 
 -- Query 8: Customer Order Summary
-
 SELECT
     u.UserID,
     CONCAT(u.FirstName, ' ', u.LastName) AS CustomerName,
@@ -127,7 +119,6 @@ GROUP BY u.UserID
 ORDER BY TotalSpent DESC;
 
 -- Query 9: Orders Using Discounts
-
 SELECT
     o.OrderID,
     d.DiscountCode,
@@ -142,7 +133,6 @@ JOIN Discount d
 ORDER BY od.DiscountAmount DESC;
 
 -- Query 10: Customer Payment Summary
-
 SELECT
     CONCAT(u.FirstName, ' ', u.LastName) AS CustomerName,
     COUNT(ot.TransactionID) AS TransactionCount,
@@ -156,5 +146,4 @@ GROUP BY u.UserID
 ORDER BY TotalPaid DESC;
 
 -- Query 11: Call Procedure
-
 CALL GetCustomerOrders(1)
